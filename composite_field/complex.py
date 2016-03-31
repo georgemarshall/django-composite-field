@@ -1,5 +1,6 @@
-from . import CompositeField
-from . import FloatField
+from django.db.models.fields import FloatField
+
+from .base import CompositeField
 
 
 class ComplexField(CompositeField):

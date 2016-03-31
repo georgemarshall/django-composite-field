@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from .base import CompositeField
+
 
 class CompositeFieldSerializer(serializers.Field):
 
@@ -13,7 +15,6 @@ class CompositeFieldSerializer(serializers.Field):
 class CompositeFieldModelSerializerMixin(object):
 
     def build_property_field(self, field_name, model_class):
-        from composite_field.base import CompositeField
         model_field = model_class._meta.get_field(field_name)
         if isinstance(model_field, CompositeField):
             field_class = CompositeFieldSerializer

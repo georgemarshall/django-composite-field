@@ -6,7 +6,7 @@ from django.utils import six
 
 
 class CompositeFieldBase(type):
-    '''Metaclass for all composite fields.'''
+    """Metaclass for all composite fields."""
 
     def __new__(cls, name, bases, attrs):
         super_new = super(CompositeFieldBase, cls).__new__
@@ -126,7 +126,7 @@ class CompositeField(object):
             object.__setattr__(self, '_model', model)
 
         def _subfield_name(self, name):
-            if not name in self._composite_field:
+            if name not in self._composite_field:
                 raise AttributeError('%r object has no attribute %r' % (
                         self._composite_field.__class__.__name__, name))
             return self._composite_field.prefix + name
@@ -164,7 +164,7 @@ class CompositeField(object):
         def __repr__(self):
             fields = ', '.join(
                 '%s=%r' % (name, getattr(self, name))
-                        for name in self._composite_field
+                for name in self._composite_field
             )
             return '%s(%s)' % (self._composite_field.__class__.__name__, fields)
 

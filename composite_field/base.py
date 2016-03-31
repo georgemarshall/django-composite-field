@@ -135,11 +135,14 @@ class CompositeField(object):
             if isinstance(values, dict):
                 for name in self._composite_field:
                     subfield_name = self._composite_field.prefix + name
-                    setattr(self._model, subfield_name, values[name])
+                    if name in values:
+                        setattr(self._model, subfield_name, values[name])
             else:
                 for name in self._composite_field:
                     subfield_name = self._composite_field.prefix + name
-                    setattr(self._model, subfield_name, getattr(values, name))
+                    if hasattr(values, name):
+                        setattr(self._model, subfield_name,
+                                getattr(values, name))
 
         def __setattr__(self, name, value):
             setattr(self._model, self._subfield_name(name), value)

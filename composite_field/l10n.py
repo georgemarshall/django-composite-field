@@ -1,12 +1,11 @@
-from copy import deepcopy
-
 from django.conf import settings
-from django.db.models.fields import Field, CharField, TextField, FloatField
+from django.db.models.fields import CharField, TextField
 from django.utils import six
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import lazy
 from django.utils.translation import get_language
 
-from . import CompositeField
+from .base import CompositeField
 
 
 LANGUAGES = map(lambda lang: lang[0], getattr(settings, 'LANGUAGES', ()))
@@ -46,13 +45,14 @@ class LocalizedField(CompositeField):
         base_lang = language.split('-')[0]
         return self[base_lang]
 
+    @python_2_unicode_compatible
     class Proxy(CompositeField.Proxy):
 
         def __bool__(self):
             return bool(six.text_type(self))
 
-        def __unicode__(self):
-            return unicode(self.current_with_fallback)
+        def __str__(self):
+            return self.current_with_fallback
 
         def __setattr__(self, name, value):
             if name == 'current':

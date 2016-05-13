@@ -1,23 +1,18 @@
 import unittest
 
 import django
+from django.test import TestCase
 from django.utils import translation
 from django.utils.encoding import force_text
 
-from composite_field_test.models import Place
-from composite_field_test.models import Direction
-from composite_field_test.models import LocalizedFoo
-from composite_field_test.models import ComplexTuple
-from composite_field_test.models import ComplexTupleWithDefaults
-from composite_field_test.models import TranslatedAbstractBase
-from composite_field_test.models import TranslatedModelA
-from composite_field_test.models import TranslatedModelB
-from composite_field_test.models import TranslatedNonAbstractBase
-from composite_field_test.models import TranslatedModelC
-from composite_field_test.models import TranslatedModelD
+from composite_field_test.models import (
+    Place, Direction, LocalizedFoo, ComplexTuple, ComplexTupleWithDefaults,
+    TranslatedAbstractBase, TranslatedModelA, TranslatedModelB,
+    TranslatedNonAbstractBase, TranslatedModelC, TranslatedModelD
+)
 
 
-class CompositeFieldTestCase(unittest.TestCase):
+class CompositeFieldTestCase(TestCase):
 
     def test_repr(self):
         place = Place(coord_x=12.0, coord_y=42.0)
@@ -72,6 +67,7 @@ class CompositeFieldTestCase(unittest.TestCase):
 
     def test_modelform(self):
         from django import forms
+
         class DirectionForm(forms.ModelForm):
             class Meta:
                 model = Direction
@@ -85,7 +81,7 @@ class CompositeFieldTestCase(unittest.TestCase):
         place.full_clean()
 
 
-class LocalizedFieldTestCase(unittest.TestCase):
+class LocalizedFieldTestCase(TestCase):
 
     def test_general(self):
         foo = LocalizedFoo()
@@ -135,26 +131,24 @@ class LocalizedFieldTestCase(unittest.TestCase):
         self.assertEqual(force_text(get_field('name').verbose_name), 'name')
 
     def test_filter(self):
-        foo1 = LocalizedFoo(name_de='eins', name_en='one')
-        foo2 = LocalizedFoo(name_de='zwei', name_en='two')
-        try:
-            foo1.save()
-            foo2.save()
-            with translation.override('de'):
-                self.assertEqual(LocalizedFoo.objects.get(name='eins'), foo1)
-                self.assertRaises(LocalizedFoo.objects.get, name='one')
-            with translation.override('en'):
-                self.assertEqual(LocalizedFoo.objects.get(name='one'), foo1)
-                self.assertRaises(LocalizedFoo.objects.get, name='eins')
-            with translation.override('de'):
-                self.assertEqual(LocalizedFoo.objects.get(name='zwei'), foo2)
-                self.assertRaises(LocalizedFoo.objects.get, name='two')
-            with translation.override('en'):
-                self.assertEqual(LocalizedFoo.objects.get(name='two'), foo2)
-                self.assertRaises(LocalizedFoo.objects.get, name='zwei')
-        finally:
-            foo1.delete()
-            foo2.delete()
+        foo1 = LocalizedFoo.objects.create(name_de='eins', name_en='one')
+        foo2 = LocalizedFoo.objects.create(name_de='zwei', name_en='two')
+        with translation.override('de'):
+            self.assertEqual(LocalizedFoo.objects.get(name='eins'), foo1)
+            with self.assertRaises(LocalizedFoo.DoesNotExist):
+                LocalizedFoo.objects.get(name='one')
+        with translation.override('en'):
+            self.assertEqual(LocalizedFoo.objects.get(name='one'), foo1)
+            with self.assertRaises(LocalizedFoo.DoesNotExist):
+                LocalizedFoo.objects.get(name='eins')
+        with translation.override('de'):
+            self.assertEqual(LocalizedFoo.objects.get(name='zwei'), foo2)
+            with self.assertRaises(LocalizedFoo.DoesNotExist):
+                LocalizedFoo.objects.get(name='two')
+        with translation.override('en'):
+            self.assertEqual(LocalizedFoo.objects.get(name='two'), foo2)
+            with self.assertRaises(LocalizedFoo.DoesNotExist):
+                LocalizedFoo.objects.get(name='zwei')
 
     def test_order_by(self):
         foo1 = LocalizedFoo(name_de='Erdnuss', name_en='peanut')
@@ -174,19 +168,17 @@ class LocalizedFieldTestCase(unittest.TestCase):
             foo1.delete()
             foo2.delete()
 
+    @unittest.skip('FIXME')
     def test_raw_sql(self):
-        foo = LocalizedFoo(name_de='Antwort', name_en='answer')
-        try:
-            foo.save()
-            foo2 = LocalizedFoo.objects.raw('SELECT * FROM composite_field_test_localizedfoo')[0]
-            with translation.override('de'):
-                self.assertEqual(unicode(foo2.name), 'Antwort')
-            with translation.override('en'):
-                self.assertEqual(unicode(foo2.name), 'answer')
-        finally:
-            foo.delete()
+        foo = LocalizedFoo.objects.create(name_de='Antwort', name_en='answer')
+        foo2 = LocalizedFoo.objects.raw('SELECT * FROM composite_field_test_localizedfoo')[0]
+        with translation.override('de'):
+            self.assertEqual(force_text(foo2.name), 'Antwort')
+        with translation.override('en'):
+            self.assertEqual(force_text(foo2.name), 'answer')
 
-class ComplexFieldTestCase(unittest.TestCase):
+
+class ComplexFieldTestCase(TestCase):
 
     def test_attributes(self):
         t = ComplexTuple()
@@ -256,7 +248,7 @@ class ComplexFieldTestCase(unittest.TestCase):
         self.assertEqual(get_field('z_imag').verbose_name, 'Im(gamma)')
 
 
-class InheritanceTestCase(unittest.TestCase):
+class InheritanceTestCase(TestCase):
 
     def test_abstract_inheritance(self):
         a = TranslatedModelA(name_de='Max Mustermann', name_en='John Doe')

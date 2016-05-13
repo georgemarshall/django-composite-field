@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-from setuptools import Command
-from setuptools import setup
+from setuptools import Command, setup
+
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -17,6 +17,7 @@ try:
     import multiprocessing
 except ImportError:
     pass
+
 
 class DjangoTestCommand(Command):
     description = "run unit test using Django management command"
@@ -41,7 +42,7 @@ setup(
     name='django-composite-field',
     version='0.7.4',
     description='CompositeField implementation for Django',
-    long_description=read('README'),
+    long_description=read('README.rst'),
     author='Michael P. Jung',
     author_email='michael.jung@terreon.de',
     license='BSD',

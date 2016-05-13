@@ -13,5 +13,3 @@ INSTALLED_APPS = [
     'composite_field',
     'composite_field_test',
 ]
-
-ROOT_URLCONF = 'composite_field_test.urls'

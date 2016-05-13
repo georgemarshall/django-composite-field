@@ -168,7 +168,7 @@ class LocalizedFieldTestCase(TestCase):
             foo1.delete()
             foo2.delete()
 
-    @unittest.skip
+    @unittest.skip('FIXME')
     def test_raw_sql(self):
         foo = LocalizedFoo.objects.create(name_de='Antwort', name_en='answer')
         foo2 = LocalizedFoo.objects.raw('SELECT * FROM composite_field_test_localizedfoo')[0]

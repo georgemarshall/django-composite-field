@@ -1,28 +1,31 @@
-================================
 CompositeField for Django Models
 ================================
 
 This is an implementation of a CompositeField for Django. Composite fields
 can be used to group fields together and reuse their definitions.
 
-Example::
+Example:
 
-    class CoordField(CompositeField):
-        x = models.FloatField()
-        y = models.FloatField()
+.. code-block:: python
 
-    class Place(models.Model):
-        name = models.CharField(max_length=10)
-        coord = CoordField()
+   class CoordField(CompositeField):
+       x = models.FloatField()
+       y = models.FloatField()
 
-    p = Place(name='Foo', coord_x=42, coord_y=0)
-    q = Place(name='Foo', coord=p.coord)
-    q.coord.y = 42
+
+   class Place(models.Model):
+       name = models.CharField(max_length=10)
+       coord = CoordField()
+
+
+   p = Place(name='Foo', coord_x=42, coord_y=0)
+   q = Place(name='Foo', coord=p.coord)
+   q.coord.y = 42
 
 The content of composite fields are stored inside the model, so they do
 not have to fiddle with any internals of the Django models. For example
 'p.coord' returns a proxy object that maps the fields 'x' and 'y'
-to the model fields 'coord_x' and 'coord_y'. The proxy objekt also makes
+to the model fields 'coord_x' and 'coord_y'. The proxy object also makes
 it possible to assign more than one property at once.
 
 There are some more examples in the included tests.py.

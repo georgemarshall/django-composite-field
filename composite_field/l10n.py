@@ -7,16 +7,17 @@ from django.utils.translation import get_language
 
 from .base import CompositeField
 
-
 LANGUAGES = map(lambda lang: lang[0], getattr(settings, 'LANGUAGES', ()))
 
 
 class LocalizedField(CompositeField):
-
     def __init__(self, field_class, verbose_name=None, *args, **kwargs):
         self.languages = kwargs.pop('languages', LANGUAGES)
         if not self.languages:
-            raise RuntimeError('Set LANGUAGES in your settings.py or pass a non empty "languages" argument before using LocalizedCharField')
+            raise RuntimeError(
+                'Set LANGUAGES in your settings.py or pass a non empty '
+                '"languages" argument before using LocalizedCharField'
+            )
         super(LocalizedField, self).__init__()
         self.verbose_name = verbose_name
         kwargs['verbose_name'] = verbose_name
@@ -29,7 +30,7 @@ class LocalizedField(CompositeField):
         for language in self:
             # verbose_name must be lazy in order for the admin to show the
             # translated verbose_names of the fields
-            self[language].verbose_name = lazy(lambda language: self.verbose_name + ' (' + language + ')', six.text_type)(language)
+            self[language].verbose_name = lazy(lambda l: self.verbose_name + ' (' + l + ')', six.text_type)(language)
         super(LocalizedField, self).contribute_to_class(cls, field_name)
 
     def get_proxy(self, model):
@@ -75,7 +76,6 @@ class LocalizedField(CompositeField):
         @property
         def current_with_fallback(self):
             language = get_language() or settings.LANGUAGE_CODE
-            translation = None
             # 1. complete language code
             translation = getattr(self, language, None)
             if translation:
@@ -96,12 +96,10 @@ class LocalizedField(CompositeField):
 
 
 class LocalizedCharField(LocalizedField):
-
     def __init__(self, *args, **kwargs):
         super(LocalizedCharField, self).__init__(CharField, *args, **kwargs)
 
 
 class LocalizedTextField(LocalizedField):
-
     def __init__(self, *args, **kwargs):
         super(LocalizedTextField, self).__init__(TextField, *args, **kwargs)

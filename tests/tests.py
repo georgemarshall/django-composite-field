@@ -5,9 +5,9 @@ from django.test import TestCase
 from django.utils import translation
 from django.utils.encoding import force_text
 
-from composite_field_test.models import (
+from .models import (
     Place, Direction, LocalizedFoo, ComplexTuple, ComplexTupleWithDefaults,
-    TranslatedAbstractBase, TranslatedModelA, TranslatedModelB,
+    TranslatedModelA, TranslatedModelB,
     TranslatedNonAbstractBase, TranslatedModelC, TranslatedModelD
 )
 

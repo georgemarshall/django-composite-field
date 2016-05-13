@@ -1,9 +1,7 @@
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-from composite_field import CompositeField
-from composite_field import LocalizedCharField
-from composite_field import ComplexField
+from composite_field import ComplexField, CompositeField, LocalizedCharField
 
 
 class CoordField(CompositeField):

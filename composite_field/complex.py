@@ -4,7 +4,6 @@ from .base import CompositeField
 
 
 class ComplexField(CompositeField):
-
     real = FloatField()
     imag = FloatField()
 

@@ -8,11 +8,11 @@ from django.utils import six
 class CompositeFieldBase(type):
     """Metaclass for all composite fields."""
 
-    def __new__(cls, name, bases, attrs):
-        super_new = super(CompositeFieldBase, cls).__new__
+    def __new__(mcs, name, bases, attrs):
+        super_new = super(CompositeFieldBase, mcs).__new__
         # If this isn't a subclass of CompositeField, don't do anything special.
         if not any(isinstance(b, CompositeFieldBase) for b in bases):
-            return super_new(cls, name, bases, attrs)
+            return super_new(mcs, name, bases, attrs)
 
         # Prepare attributes.
         fields = []
@@ -24,7 +24,7 @@ class CompositeFieldBase(type):
         attrs['subfields'] = OrderedDict(fields)
 
         # Create the class.
-        new_class = super_new(cls, name, bases, attrs)
+        new_class = super_new(mcs, name, bases, attrs)
         return new_class
 
 
@@ -58,11 +58,7 @@ class CompositeField(object):
                 subfield_name = self.prefix + subfield_name
                 subfield.contribute_to_class(cls, subfield_name)
             setattr(cls, name, property(self.get, self.set))
-        if hasattr(cls._meta, 'add_virtual_field'):
-            # Django < 1.8
-            cls._meta.add_virtual_field(self)
-        else:
-            cls._meta.add_field(self, virtual=True)
+        cls._meta.add_field(self, virtual=True)
 
     def __init__(self, prefix=None):
         self.prefix = prefix
@@ -128,7 +124,7 @@ class CompositeField(object):
         def _subfield_name(self, name):
             if name not in self._composite_field:
                 raise AttributeError('%r object has no attribute %r' % (
-                        self._composite_field.__class__.__name__, name))
+                    self._composite_field.__class__.__name__, name))
             return self._composite_field.prefix + name
 
         def _set(self, values):

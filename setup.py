@@ -32,7 +32,7 @@ class DjangoTestCommand(Command):
     def run(self):
         # Prepare DJANGO_SETTINGS_MODULE and PYTHONPATH
         import os, sys
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'test_settings'
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
         sys.path[0:0] = [os.path.dirname(os.path.dirname(__file__))]
         # Execute management command 'test'
         from django.core.management import execute_from_command_line
